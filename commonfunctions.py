@@ -1,11 +1,14 @@
 
-
+import os
 import skimage.io as io
 import matplotlib.pyplot as plt
 import numpy as np
-from skimage.exposure import histogram
+from skimage.exposure import histogram, rescale_intensity
 from matplotlib.pyplot import bar
 from skimage.color import rgb2gray,rgb2hsv
+from sklearn.model_selection import train_test_split
+from sklearn import svm
+import cv2
 
 # Convolution:
 from scipy.signal import convolve2d
@@ -13,8 +16,8 @@ from scipy import fftpack
 import math
 
 from skimage.util import random_noise
-from skimage.filters import median
-from skimage.feature import canny
+from skimage.filters import median, gaussian
+from skimage.feature import canny, hog
 
 from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 unused import
 
@@ -24,7 +27,9 @@ from matplotlib.ticker import LinearLocator, FormatStrFormatter
 import numpy as np
 
 # Edges
-from skimage.filters import sobel_h, sobel, sobel_v,roberts, prewitt
+from skimage.filters import sobel_h, sobel, sobel_v,roberts, prewitt, threshold_otsu
+from skimage import transform
+from skimage.morphology import skeletonize
 
 # Show the figures / plots inside the notebook
 def show_images(images,titles=None):
