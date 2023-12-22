@@ -28,9 +28,11 @@ from matplotlib.ticker import LinearLocator, FormatStrFormatter
 import numpy as np
 
 # Edges
-from skimage.filters import sobel_h, sobel, sobel_v,roberts, prewitt, threshold_otsu
+from skimage.filters import sobel_h, sobel, sobel_v,roberts, prewitt, threshold_otsu,threshold_local
 from skimage import transform
 from skimage.morphology import skeletonize, thin
+
+from PIL import Image, ImageEnhance
 
 # Show the figures / plots inside the notebook
 def show_images(images,titles=None):
@@ -115,11 +117,14 @@ def getThreshold(img):
     return Tnew
 
 def localThreshholding(img: np.ndarray):
+
     r, c = img.shape
     t_a = getThreshold(img[0:r//2, 0:c//2])
     t_b = getThreshold(img[0:r//2, c//2:c])
     t_c = getThreshold(img[r//2:r, 0:c//2])
     t_d = getThreshold(img[r//2:r, c//2:c])
+
+
     image_a = (img[0:r//2, 0:c//2] * 255 < t_a)
     image_b = (img[0:r//2, c//2:c] * 255 < t_b)
     image_c = (img[r//2:r, 0:c//2] * 255 < t_c)
