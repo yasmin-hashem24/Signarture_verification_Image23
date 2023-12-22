@@ -3,7 +3,7 @@ import os
 import skimage.io as io
 import matplotlib.pyplot as plt
 import numpy as np
-from skimage.exposure import histogram, rescale_intensity
+from skimage.exposure import histogram, rescale_intensity, adjust_gamma
 from matplotlib.pyplot import bar
 from skimage.color import rgb2gray,rgb2hsv
 from sklearn.model_selection import train_test_split
@@ -96,3 +96,38 @@ def showHist(img):
     imgHist = histogram(img, nbins=256)
     
     bar(imgHist[1].astype(np.uint8), imgHist[0], width=0.8, align='center')
+
+def getThreshold(img):
+    iut=(img * 255).astype(np.uint8)
+    hist = np.zeros(256)
+    for i in range(iut.shape[0]):
+        for j in range(iut.shape[1]):
+            hist[iut[i][j]] += 1
+    T_init= round(sum([ i*hist[i] for i in range(256)])/np.cumsum(hist)[-1])
+    Tnew = T_init
+    while True:
+        lower = round(sum([ i*hist[i] for i in range(Tnew)]))/np.cumsum(hist[:Tnew])[-1]
+        higher =  round(sum([ i*hist[i] for i in range(Tnew,256)]))/np.cumsum(hist[Tnew:])[-1]
+        Tnew = round((lower+higher)/2)
+        if Tnew == T_init:
+            break
+        T_init = Tnew
+    return Tnew
+
+def localThreshholding(img: np.ndarray):
+    r, c = img.shape
+    t_a = getThreshold(img[0:r//2, 0:c//2])
+    t_b = getThreshold(img[0:r//2, c//2:c])
+    t_c = getThreshold(img[r//2:r, 0:c//2])
+    t_d = getThreshold(img[r//2:r, c//2:c])
+    image_a = (img[0:r//2, 0:c//2] * 255 < t_a)
+    image_b = (img[0:r//2, c//2:c] * 255 < t_b)
+    image_c = (img[r//2:r, 0:c//2] * 255 < t_c)
+    image_d = (img[r//2:r, c//2:c] * 255 < t_d)
+
+    img[0:r//2, 0:c//2] = image_a
+    img[0:r//2, c//2:c] = image_b
+    img[r//2:r, 0:c//2] = image_c
+    img[r//2:r, c//2:c] = image_d    
+    return img
+   
