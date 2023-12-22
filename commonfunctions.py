@@ -9,10 +9,11 @@ from skimage.color import rgb2gray,rgb2hsv
 from sklearn.model_selection import train_test_split
 from sklearn import svm
 import cv2
-
+from sklearn.neighbors import KNeighborsClassifier
 # Convolution:
 from scipy.signal import convolve2d
 from scipy import fftpack
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
 import math
 
 from skimage.util import random_noise
@@ -29,7 +30,7 @@ import numpy as np
 # Edges
 from skimage.filters import sobel_h, sobel, sobel_v,roberts, prewitt, threshold_otsu
 from skimage import transform
-from skimage.morphology import skeletonize
+from skimage.morphology import skeletonize, thin
 
 # Show the figures / plots inside the notebook
 def show_images(images,titles=None):
