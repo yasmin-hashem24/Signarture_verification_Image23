@@ -8,6 +8,7 @@ from matplotlib.pyplot import bar
 from skimage.color import rgb2gray,rgb2hsv
 from sklearn.model_selection import train_test_split
 from sklearn import svm
+from joblib import dump, load
 import cv2
 from sklearn.neighbors import KNeighborsClassifier
 # Convolution:
