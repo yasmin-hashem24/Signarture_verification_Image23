@@ -13,7 +13,7 @@ from sklearn.neighbors import KNeighborsClassifier
 # Convolution:
 from scipy.signal import convolve2d
 from scipy import fftpack
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
+#from tensorflow.keras.preprocessing.image import ImageDataGenerator
 import math
 
 from skimage.util import random_noise
@@ -30,7 +30,7 @@ import numpy as np
 # Edges
 from skimage.filters import sobel_h, sobel, sobel_v,roberts, prewitt, threshold_otsu,threshold_local
 from skimage import transform
-from skimage.morphology import skeletonize, thin
+from skimage.morphology import skeletonize, thin, disk, rectangle,opening, dilation
 
 from PIL import Image, ImageEnhance
 
