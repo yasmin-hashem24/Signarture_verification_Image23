@@ -11,6 +11,7 @@ from sklearn import svm
 from joblib import dump, load
 import cv2
 from sklearn.neighbors import KNeighborsClassifier
+import threading
 # Convolution:
 from scipy.signal import convolve2d
 from scipy import fftpack
