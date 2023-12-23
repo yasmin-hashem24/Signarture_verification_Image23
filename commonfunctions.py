@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from skimage.exposure import histogram, rescale_intensity, adjust_gamma
 from matplotlib.pyplot import bar
-from skimage.color import rgb2gray,rgb2hsv
+from skimage.color import rgb2gray,rgb2hsv,rgba2rgb,gray2rgb
 from sklearn.model_selection import train_test_split
 from sklearn import svm
 from joblib import dump, load
@@ -29,7 +29,6 @@ from matplotlib.ticker import LinearLocator, FormatStrFormatter
 import numpy as np
 
 # Edges
-from skimage.filters import sobel_h, sobel, sobel_v,roberts, prewitt, threshold_otsu,threshold_local
 from skimage import transform
 from skimage.morphology import skeletonize, thin, disk, rectangle,opening, dilation
 
