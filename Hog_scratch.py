@@ -150,3 +150,58 @@ def compute_hog_features(image: np.ndarray) -> np.ndarray:
             features_list.append(histogram_18x18_normalized)
 
     return np.concatenate(features_list, axis=0)
+
+
+
+def calculate_histogram_per_cell_parallel(result, cell_direction, cell_magnitude, hist_bins, idx, lock):
+    histogram = calculate_histogram_per_cell(cell_direction, cell_magnitude, hist_bins)
+    with lock:
+        result[idx] = histogram  
+
+def compute_hog_features_parallel(image: np.ndarray) -> np.ndarray:
+    image_sqrt = np.sqrt(image.astype(float))
+
+    horizontal_mask = np.array([-1, 0, 1])
+    vertical_mask = np.array([[-1], [0], [1]])
+
+    horizontal_gradient = compute_gradient(image_sqrt, horizontal_mask)
+    vertical_gradient = compute_gradient(image_sqrt, vertical_mask)
+
+    grad_magnitude = compute_gradient_magnitude(horizontal_gradient, vertical_gradient)
+    grad_direction = compute_gradient_direction(horizontal_gradient, vertical_gradient)
+
+    hist_bins = np.array([10, 30, 50, 70, 90, 110, 130, 150, 170])
+
+    cells_histogram = np.zeros((grad_magnitude.shape[0] // 9, grad_magnitude.shape[1] // 9, 9))
+
+    threads = []
+    results = [None] * len(cells_histogram.ravel())
+    idx = 0
+    lock = threading.Lock()
+
+    for r in range(0, grad_magnitude.shape[0] // 9 * 9, 9):
+        for c in range(0, grad_magnitude.shape[1] // 9 * 9, 9):
+            cell_direction = grad_direction[r:r+9, c:c+9]
+            cell_magnitude = grad_magnitude[r:r+9, c:c+9]
+            thread = threading.Thread(target=calculate_histogram_per_cell_parallel,
+                                      args=(results, cell_direction, cell_magnitude, hist_bins, idx, lock))
+            threads.append(thread)
+            thread.start()
+            idx += 1
+
+
+    for thread in threads:
+        thread.join()
+
+    for idx, (r, c) in enumerate(zip(range(0, grad_magnitude.shape[0] // 9 * 9, 9),
+                                     range(0, grad_magnitude.shape[1] // 9 * 9, 9))):
+        cells_histogram[r // 9, c // 9] = results[idx]
+
+    features_list = []
+    for r in range(cells_histogram.shape[0] - 1):
+        for c in range(cells_histogram.shape[1] - 1):
+            histogram_18x18 = np.reshape(cells_histogram[r:r+2, c:c+2], (36,))
+            histogram_18x18_normalized = histogram_18x18 / (np.sum(np.abs(histogram_18x18)) + 1e-5)
+            features_list.append(histogram_18x18_normalized)
+
+    return np.concatenate(features_list, axis=0)
