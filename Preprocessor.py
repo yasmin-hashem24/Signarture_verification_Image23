@@ -14,7 +14,6 @@ class Preprocessor:
             return gray_img
     
     def noiseRemoval(self, img: np.ndarray) -> np.ndarray:
-        '''Implement the gaussian filter'''
         clean_img = gaussian(img, 1.2)
         return clean_img
     
@@ -63,8 +62,8 @@ class Preprocessor:
         clean_img = self.noiseRemoval(gray_img)
         enhanced_img = self.contrastEnhancemet(clean_img)
         binarized_img = self.binarize(enhanced_img)
-        opened_img = opening(binarized_img, rectangle(5,5))
-        skew_corrected_img = self.skewCorrection(opened_img)
+        # opened_img = opening(binarized_img, rectangle(5,5))
+        skew_corrected_img = self.skewCorrection(binarized_img)
         skeletonized_img = skeletonize(skew_corrected_img)
-        show_images([opened_img, skeletonized_img])
+        # show_images([opened_img, skeletonized_img])
         return skeletonized_img 
