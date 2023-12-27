@@ -56,6 +56,29 @@ def thin_customized(image, max_num_iter=None):
     return skel.astype(bool)
 
 
+def thin_customized_parallel(image, max_num_iter=None, num_threads=2):
+    skel = np.asarray(image, dtype=bool).astype(np.uint8)
+    mask = np.array([[8, 4, 2],
+                     [16, 0, 1],
+                     [32, 64, 128]], dtype=np.uint8)
+
+    max_num_iter = max_num_iter or np.inf
+
+    global result
+    result = []
+    result_lock = threading.Lock()
+
+    threads = []
+
+    for _ in range(num_threads):
+        thread = threading.Thread(target=thin_customized, args=(image, skel.copy(), mask, G123_LUT, max_num_iter, result_lock))
+        threads.append(thread)
+        thread.start()
+
+    for thread in threads:
+        thread.join()
+
+    return result[0]
 
 def GaussianBlurImage(image, sigma):
     filter_size = 2 * int(4 * sigma + 0.5) + 1
@@ -72,4 +95,22 @@ def GaussianBlurImage(image, sigma):
     im_filtered = convolve2d(image, gaussian_filter, mode='same', boundary='wrap')
     return im_filtered
 
+
+
+def GaussianBlurImage_parallel(image, sigma, num_threads=2):
+    global result
+    result = []
+    result_lock = threading.Lock()
+
+    threads = []
+
+    for _ in range(num_threads):
+        thread = threading.Thread(target=GaussianBlurImage, args=(image, sigma, result_lock, result))
+        threads.append(thread)
+        thread.start()
+
+    for thread in threads:
+        thread.join()
+
+    return result[0]
 
