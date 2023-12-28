@@ -43,9 +43,15 @@ class Preprocessor:
 
         return binary_image.astype(np.uint8)
     
+    # def binarize(self, img: np.ndarray) -> np.ndarray:
+    #     block_size = 25
+    #     binarized_img = self.localThresholding(img, block_size, 0.1)
+    #     return binarized_img
+    
     def binarize(self, img: np.ndarray) -> np.ndarray:
-        block_size = 25
-        binarized_img = self.localThresholding(img, block_size, 0.1)
+        block_size = 21
+        local_thresh = threshold_local(img, block_size, offset=0.1)
+        binarized_img = (img < local_thresh).astype(np.uint8)
         return binarized_img
     
     def skewCorrection(self, img: np.ndarray) -> np.ndarray:
@@ -65,5 +71,5 @@ class Preprocessor:
         # opened_img = opening(binarized_img, rectangle(5,5))
         skew_corrected_img = self.skewCorrection(binarized_img)
         skeletonized_img = skeletonize(skew_corrected_img)
-        # show_images([opened_img, skeletonized_img])
+        show_images([skeletonized_img])
         return skeletonized_img 

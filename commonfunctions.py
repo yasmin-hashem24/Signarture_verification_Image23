@@ -16,7 +16,7 @@ import threading
 # Convolution:
 from scipy.signal import convolve2d
 from scipy import fftpack
-#from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
 import math
 
 from skimage.util import random_noise

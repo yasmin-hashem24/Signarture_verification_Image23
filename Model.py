@@ -16,13 +16,13 @@ class Model:
         read_imgs = os.listdir(dir)
         for i in range(len(read_imgs)):
             image = io.imread(dir + read_imgs[i]).astype(np.uint8)
-            dataset.append(self.preprocessorScratch.preprocess(image))
+            dataset.append(self.preprocessor.preprocess(image))
         return dataset
     
     def extractFeatures(self, imgs: list[np.ndarray]) -> np.ndarray:
         extracted_features = list()
         for i in range(len(imgs)):
-            extracted_features.append(self.preprocessorScratch.HOGFeatureExtraction(imgs[i]))
+            extracted_features.append(self.preprocessor.HOGFeatureExtractionSkimage(imgs[i]))
         return extracted_features
     
     def train(self, real_dir: str = "", forged_dir: str = "") -> None:
@@ -51,13 +51,10 @@ class Model:
     def loadModel(self, model_path: str = "") -> None:
         self.model = load(model_path + 'SVMmodel.pkl')
     
-    def predict(self, expected_label: int = 0, img_path: str = "") -> bool:
-        img_to_be_predicted = self.readDataset(img_path)
-        extraced_features = self.extractFeatures(img_to_be_predicted)
+    def predict(self, img_path: str = "") -> bool:
+        img_to_be_predicted = io.imread(img_path).astype(np.uint8)
+
+        extraced_features = self.extractFeatures([self.preprocessor.preprocess(img_to_be_predicted)])
         
         test_prediction = self.model.predict(extraced_features)
-
-        if test_prediction == expected_label:
-            return True
-        else:
-            return False
+        return test_prediction
