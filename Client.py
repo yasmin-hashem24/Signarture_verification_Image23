@@ -53,7 +53,7 @@ class SigVerifWindow(QWidget):
                                                     color:grey;
                                                     }
                                         """) 
-        self.verif_result = QLabel("hereeee")
+        self.verif_result = QLabel("")
         self.setLayout(self.v_box_layout)
         
     def LoadGUI(self) -> None:
@@ -110,5 +110,3 @@ class SigVerifWindow(QWidget):
                 self.verif_button.setEnabled(True)
                 self.signature_placeholder.setPixmap(signature_picture.scaled(400,200))
                 self.file_name = file_name
-                    
-        
